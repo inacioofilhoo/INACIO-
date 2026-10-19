@@ -1,0 +1,373 @@
+<title>Fluxos do Almoxarifado PEC</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: faixa de cabeçalho estilo sinalização de armazém; índice de WIs à esquerda (vira faixa rolável no celular); fluxo no centro. */
+:root {
+  --bg: #eef2f5;
+  --surface: #ffffff;
+  --ink: #15212c;
+  --muted: #586776;
+  --line: #d3dbe2;
+  --accent: #0d5a8a;
+  --accent-soft: #e0edf6;
+  --on-accent: #ffffff;
+  --hsse: #a85a06;
+  --hsse-soft: #fdf0de;
+  --gap: #b42318;
+  --gap-soft: #fdebe9;
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e141a; --surface: #161f28; --ink: #e4eaf0; --muted: #93a2b0; --line: #29353f;
+    --accent: #69b0de; --accent-soft: #15314a; --on-accent: #0b1620;
+    --hsse: #f0a64c; --hsse-soft: #382812; --gap: #f27b6f; --gap-soft: #3b1a17;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e141a; --surface: #161f28; --ink: #e4eaf0; --muted: #93a2b0; --line: #29353f;
+  --accent: #69b0de; --accent-soft: #15314a; --on-accent: #0b1620;
+  --hsse: #f0a64c; --hsse-soft: #382812; --gap: #f27b6f; --gap-soft: #3b1a17;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1320px; margin: 0 auto; }
+
+header.band { background: var(--surface); border-bottom: 1px solid var(--line); }
+header.band .wrap { padding-block: 22px 18px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 4px 0 0; letter-spacing: .01em; text-wrap: balance; }
+.source { color: var(--muted); font-size: 13px; max-width: 46ch; }
+
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; padding-block: 24px 48px; }
+nav.index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; display: flex; flex-direction: column; gap: 14px; }
+.group-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+.group { display: flex; flex-direction: column; gap: 2px; }
+nav.index button { all: unset; cursor: pointer; display: grid; grid-template-columns: 52px 1fr; gap: 8px; align-items: baseline; padding: 7px 10px; border-radius: 6px; color: var(--ink); font-size: 14px; line-height: 1.3; }
+nav.index button .code { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+nav.index button:hover { background: var(--accent-soft); }
+nav.index button[aria-current="true"] { background: var(--accent); color: var(--on-accent); }
+nav.index button[aria-current="true"] .code { color: var(--on-accent); opacity: .85; }
+nav.index button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.wi-head { display: flex; flex-direction: column; gap: 6px; }
+.wi-code { font-family: var(--font-mono); font-size: 13px; color: var(--accent); font-weight: 500; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3vw, 32px); line-height: 1.1; margin: 0; text-wrap: balance; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 8px; }
+.meta div { background: var(--surface); padding: 8px 12px; min-width: 0; }
+.meta dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.meta dd { margin: 2px 0 0; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.meta dd.empty { color: var(--gap); font-weight: 400; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 18px; height: 12px; border-radius: 3px; border: 1.5px solid var(--accent); background: var(--surface); display: inline-block; }
+.sw.start { background: var(--accent); }
+.sw.dec { background: var(--accent-soft); transform: rotate(45deg); width: 11px; height: 11px; border-radius: 1px; }
+.sw.hsse { background: var(--hsse-soft); border-color: var(--hsse); }
+.sw.gap { background: var(--gap-soft); border-color: var(--gap); border-style: dashed; }
+.sw.ref { border-color: var(--muted); border-style: dashed; }
+
+.diagram-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px 12px; overflow-x: auto; }
+.diagram { display: flex; justify-content: center; min-height: 120px; }
+.diagram svg { max-width: 100%; height: auto; }
+.diagram small { font-size: 11.5px; opacity: .8; font-family: var(--font-body); }
+.diagram .nodeLabel, .diagram .edgeLabel { font-family: var(--font-body); }
+.render-error { color: var(--gap); font-family: var(--font-mono); font-size: 13px; white-space: pre-wrap; }
+
+section.notes h3, .editor h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin: 0 0 8px; letter-spacing: .01em; }
+.notes ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.notes li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: baseline; max-width: 80ch; }
+.tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; text-align: center; }
+.tag.lacuna { background: var(--gap-soft); color: var(--gap); }
+.tag.revisar { background: var(--hsse-soft); color: var(--hsse); }
+.tag.nota { background: var(--accent-soft); color: var(--accent); }
+
+.editor { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.editor summary { cursor: pointer; padding: 14px 16px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.editor summary::-webkit-details-marker { display: none; }
+.editor summary::after { content: "+"; font-family: var(--font-mono); color: var(--muted); }
+.editor[open] summary::after { content: "–"; }
+.editor summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 10px; }
+.editor-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.editor p { margin: 0; color: var(--muted); font-size: 14px; max-width: 75ch; }
+.editor code { font-family: var(--font-mono); font-size: 12.5px; background: var(--accent-soft); padding: 1px 4px; border-radius: 3px; color: var(--ink); }
+textarea { width: 100%; min-height: 280px; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; resize: vertical; }
+textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { font: 500 14px var(--font-body); padding: 7px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn:hover { border-color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.status { font-size: 13px; color: var(--muted); }
+.edited-flag { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--hsse); }
+
+@media (max-width: 820px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  nav.index { position: static; flex-direction: row; overflow-x: auto; gap: 16px; padding-bottom: 6px; }
+  .group { flex-direction: row; gap: 4px; }
+  .group-label { display: none; }
+  nav.index button { grid-template-columns: auto; white-space: nowrap; padding: 6px 10px; border: 1px solid var(--line); background: var(--surface); }
+  nav.index button .title { display: none; }
+  .notes li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .notes .tag { justify-self: start; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Almoxarifado · BRPEC-WH-WHA · dono do processo: Inácio Filho</div>
+      <h1>Fluxos do Almoxarifado PEC</h1>
+    </div>
+    <p class="source">Desenhados a partir das 8 Work Instructions aprovadas (WI001 a WI009). Etapas, ferramentas e pontos de HSSE vêm do texto das WIs. O que a WI não cobre aparece marcado como lacuna.</p>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="index" id="index" aria-label="Work Instructions"></nav>
+  <main>
+    <div class="wi-head">
+      <div class="wi-code" id="wi-code"></div>
+      <h2 id="wi-title"></h2>
+      <dl class="meta" id="wi-meta"></dl>
+    </div>
+    <div class="legend" aria-label="Legenda">
+      <span><i class="sw start"></i>Início / fim</span>
+      <span><i class="sw"></i>Etapa da WI</span>
+      <span><i class="sw dec"></i>Decisão</span>
+      <span><i class="sw hsse"></i>Ponto de HSSE</span>
+      <span><i class="sw gap"></i>Lacuna: a WI não diz</span>
+      <span><i class="sw ref"></i>Ligação com outra WI</span>
+    </div>
+    <div class="diagram-card">
+      <div class="diagram" id="diagram" role="img" aria-label="Fluxograma"></div>
+      <div class="render-error" id="render-error" hidden></div>
+    </div>
+    <section class="notes" id="notes-section">
+      <h3>Pontos para revisar na WI</h3>
+      <ul id="notes"></ul>
+    </section>
+    <details class="editor" id="editor">
+      <summary><span>Editar este fluxo <span class="edited-flag" id="edited-flag" hidden>· editado</span></span></summary>
+      <div class="editor-body">
+        <p>O fluxo é escrito em texto (sintaxe Mermaid) e redesenha enquanto você digita. Uma etapa é <code>n1["Receber material"]</code>, uma decisão é <code>d1{"Confere?"}</code> e a ligação é <code>n1 --&gt; d1</code> ou <code>d1 --&gt;|Não| n5</code>. Para marcar o tipo, acrescente <code>:::hsse</code>, <code>:::gap</code>, <code>:::dec</code>, <code>:::start</code> ou <code>:::ref</code> ao nome da caixa.</p>
+        <label for="src" class="eyebrow">Código do fluxo</label>
+        <textarea id="src" spellcheck="false"></textarea>
+        <div class="actions">
+          <button class="btn primary" id="copy" type="button">Copiar código</button>
+          <button class="btn" id="reset" type="button">Restaurar original</button>
+          <span class="status" id="status" role="status"></span>
+        </div>
+        <p>Suas edições ficam salvas só neste navegador. Para levar o fluxo para outro lugar, copie o código e cole no draw.io (Organizar › Inserir › Avançado › Mermaid) ou em mermaid.live, que exportam PNG e SVG.</p>
+      </div>
+    </details>
+  </main>
+</div>
+
+<script type="application/json" id="wi-data">
+[
+ {"id":"mapa","group":"Visão geral","code":"MAPA","title":"Mapa das Work Instructions",
+  "meta":[["Escopo","8 WIs aprovadas"],["Departamento","Almoxarifado"],["Dono do processo","Inácio Filho"],["Skill matrix","Assistente de Almoxarifado"]],
+  "notes":[["nota","Clique numa WI à esquerda para ver o fluxo dela. As setas tracejadas mostram onde uma WI leva a outra."],["lacuna","A WI008 não está no PDF. A numeração pula de WI007 para WI009."],["revisar","As ligações entre WIs (WI007 → WI005, WI007 ↔ WI006) foram deduzidas do conteúdo. Nenhuma WI cita outra no campo Related doc."]],
+  "src":"flowchart LR\n  nf([\"Material chega com NF<br/><small>transportadora ou motorista APM</small>\"]):::start\n  pcm([\"Controlador de manutenção\"]):::start\n  lid([\"Líder de execução\"]):::start\n  area([\"RH ou Depot\"]):::start\n  subgraph REC[\"Recebimento de material\"]\n    w7[\"WI007<br/>Recebimento e armazenamento de estocáveis\"]\n    w6[\"WI006<br/>Itens de aplicação direta\"]\n    w5[\"WI005<br/>Divergências de estocáveis\"]\n  end\n  subgraph ENT[\"Entrega de material\"]\n    w2[\"WI002<br/>Entrega manual e baixa em Work Task\"]\n    w9[\"WI009<br/>EPIs para RH e Depot\"]\n  end\n  subgraph PRE[\"Preventiva 250 h\"]\n    w1[\"WI001<br/>Terminal Tractors\"]\n    w3[\"WI003<br/>Reach Stacker\"]\n  end\n  subgraph EST[\"Estorno\"]\n    w4[\"WI004<br/>Estorno de estocáveis\"]\n  end\n  nf -->|item GPN| w7\n  nf -->|item GPG| w6\n  w7 -.->|não confere| w5\n  pcm -->|Teams PCM x Estoque| w1\n  pcm -->|Teams PCM x Estoque| w3\n  pcm -->|app de requisição| w2\n  lid -->|e-mail| w4\n  area -->|e-mail| w9"},
+
+ {"id":"wi001","group":"Preventiva","code":"WI001","title":"Separação de Materiais de Preventivas de 250 h de Terminal Tractors",
+  "meta":[["Versão","2.0"],["Emissão","12/03/2026"],["Processo","Preventiva"],["Criação","Zenaide Ellen"],["Aprovação","Bruno Abreu"],["HSSE","Ticiana Ferreira"]],
+  "notes":[["lacuna","Não diz o que fazer se um item da requisição faltar no estoque ou se o endereço da planilha estiver errado."],["revisar","Só a WI001 tem a etapa 9 (devolver o carrinho vazio). A WI003, que é o mesmo processo para Reach Stacker, termina na etapa 8."],["revisar","Erros de digitação: “Posicinar/Posicine”, “tosão de tornozelo”, “Requistion”."]],
+  "src":"flowchart TD\n  s([\"Controlador posta a requisição no Teams<br/><small>grupo PCM x Estoque</small>\"]):::start\n  n1[\"1. Receber a requisição<br/><small>Teams · equipamento da preventiva do próximo turno</small>\"]\n  n2[\"2. Baixar e imprimir a requisição<br/><small>Teams · impressora</small>\"]\n  n3[\"3. Identificar a requisição impressa<br/><small>com o equipamento informado pelo controlador</small>\"]\n  n4[\"4. Localizar os itens no estoque<br/><small>Excel · planilha de inventário, coluna Endereço</small>\"]\n  n5[\"5. Coletar os itens no estoque\"]\n  h5>\"HSSE: atenção no percurso<br/>risco de torção de tornozelo\"]:::hsse\n  n6[\"6. Separar os materiais no carrinho móvel\"]\n  n7[\"7. Baixar os materiais no IFS<br/><small>tela Maintenance Material Requisition, conforme as tasks</small>\"]\n  n8[\"8. Alocar os itens na estação de materiais<br/><small>próxima à baia da preventiva do TT</small>\"]\n  h8>\"HSSE: capacete e óculos<br/>no percurso pela oficina\"]:::hsse\n  n9[\"9. Posicionar o carrinho vazio<br/><small>na marcação ao lado da estação</small>\"]\n  e([\"Materiais prontos para a preventiva\"]):::start\n  s --> n1 --> n2 --> n3 --> n4 --> n5 --> n6 --> n7 --> n8 --> n9 --> e\n  n5 -.- h5\n  n8 -.- h8"},
+
+ {"id":"wi003","group":"Preventiva","code":"WI003","title":"Separação de Itens de Preventivas de 250 h de Reach Stacker",
+  "meta":[["Versão","1.0"],["Emissão","10/06/2026"],["Processo","Preventiva"],["Criação","Zenaide Ellen"],["Aprovação","Bruno Abreu"],["HSSE","Ticiana Ferreira"]],
+  "notes":[["lacuna","Não diz o que fazer se um item da requisição faltar no estoque."],["revisar","Falta a etapa de devolver o carrinho vazio, que existe na WI001 (etapa 9)."],["revisar","Na etapa 3 o texto “Localizar os itens no estoque” ficou colado no fim (“teamsLocalizar”)."]],
+  "src":"flowchart TD\n  s([\"Controlador posta a requisição no Teams<br/><small>grupo PCM x Estoque</small>\"]):::start\n  n1[\"1. Receber a requisição<br/><small>Teams · equipamento da preventiva do próximo turno</small>\"]\n  n2[\"2. Baixar e imprimir a requisição<br/><small>Teams · impressora</small>\"]\n  n3[\"3. Identificar a requisição impressa<br/><small>com o equipamento informado pelo controlador</small>\"]\n  n4[\"4. Localizar os itens no estoque<br/><small>Excel · planilha de inventário, coluna Endereço</small>\"]\n  n5[\"5. Coletar os itens no estoque\"]\n  h5>\"HSSE: atenção no percurso<br/>risco de torção de tornozelo\"]:::hsse\n  n6[\"6. Separar os materiais no carrinho móvel\"]\n  n7[\"7. Baixar os materiais no IFS<br/><small>tela Maintenance Material Requisition, conforme as tasks</small>\"]\n  n8[\"8. Posicionar os itens na estação de materiais<br/><small>próxima à baia da preventiva de RS</small>\"]\n  h8>\"HSSE: capacete e óculos<br/>no percurso pela oficina\"]:::hsse\n  e([\"Materiais prontos para a preventiva\"]):::start\n  s --> n1 --> n2 --> n3 --> n4 --> n5 --> n6 --> n7 --> n8 --> e\n  n5 -.- h5\n  n8 -.- h8"},
+
+ {"id":"wi002","group":"Entrega de material","code":"WI002","title":"Entrega Manual e Baixa de Materiais Inventariados em uma Work Task",
+  "meta":[["Versão","1.0"],["Emissão","22/01/2026"],["Processo","Entrega de Material"],["Criação","Turma 2026.1"],["Aprovação","Italo da Silva"],["HSSE","Ticiana Ferreira"]],
+  "notes":[["lacuna","Etapa 2: não diz o que fazer se o equipamento não bater com a requisição."],["lacuna","Etapa 5: não diz o que fazer se o Quantity On Hand estiver zerado ou abaixo do pedido."],["revisar","O campo Creator está como “Turma 2026.1”, não como uma pessoa responsável."],["revisar","Erro de digitação: “tosão de tornozelo”."]],
+  "src":"flowchart TD\n  s([\"Controlador envia a requisição vinculada à task<br/><small>app de requisição de manutenção</small>\"]):::start\n  n1[\"1. Receber a requisição<br/><small>Power Apps</small>\"]\n  n2[\"2. Conferir o equipamento com o solicitante<br/><small>Power Apps</small>\"]\n  d2{\"Equipamento confere<br/>com a requisição?\"}:::dec\n  g2[\"Não descrito na WI\"]:::gap\n  n3[\"3. Atualizar a requisição no IFS<br/><small>aba Maintenance Material Requisition</small>\"]\n  n4[\"4. Checar com o solicitante<br/>quais itens ele vai precisar<br/><small>IFS</small>\"]\n  n5[\"5. Verificar o estoque disponível<br/><small>IFS · linha Quantity On Hand</small>\"]\n  d5{\"Há saldo<br/>em estoque?\"}:::dec\n  g5[\"Não descrito na WI\"]:::gap\n  n6[\"6. Localizar o item<br/><small>Excel · planilha de inventário, pelo código</small>\"]\n  n7[\"7. Pegar o item no estoque\"]\n  h7>\"HSSE: atenção no percurso<br/>risco de torção de tornozelo\"]:::hsse\n  n8[\"8. Entregar o material ao solicitante\"]\n  n9[\"9. Baixar o material no IFS<br/><small>Maintenance Material Requisition › botão direito › Issue</small>\"]\n  n10[\"10. Marcar a requisição como atendida<br/><small>Power Apps · aba Status</small>\"]\n  e([\"Entrega concluída\"]):::start\n  s --> n1 --> n2 --> d2\n  d2 -->|Sim| n3\n  d2 -->|Não| g2\n  n3 --> n4 --> n5 --> d5\n  d5 -->|Sim| n6\n  d5 -->|Não| g5\n  n6 --> n7 --> n8 --> n9 --> n10 --> e\n  n7 -.- h7"},
+
+ {"id":"wi009","group":"Entrega de material","code":"WI009","title":"Separação de EPIs Solicitados pelo RH e Depot",
+  "meta":[["Versão","1.0"],["Emissão","04/08/2026"],["Processo","Entrega de Material"],["Criação","Zenaide Ellen"],["Aprovação","Raphael Santos"],["HSSE","não preenchido"]],
+  "notes":[["lacuna","Etapa 2: não diz o que fazer se o EPI ainda não estiver liberado para o colaborador pelo prazo do HSSE."],["lacuna","Etapa 6: não diz onde a foto da entrega deve ser registrada ou enviada."],["revisar","O campo HSSE está vazio no cabeçalho."],["revisar","Erros de digitação: “Verique”, “fazer entregar”, “disponivel”."]],
+  "src":"flowchart TD\n  s([\"RH ou Depot envia e-mail<br/><small>material e quantidade</small>\"]):::start\n  n1[\"1. Receber a solicitação<br/><small>Outlook</small>\"]\n  n2[\"2. Verificar o prazo do EPI na Cenci<br/><small>Processo › Entrega Manual › matrícula</small>\"]\n  d2{\"EPI liberado para<br/>o colaborador?\"}:::dec\n  g2[\"Não descrito na WI\"]:::gap\n  n3[\"3. Liberar o EPI na Cenci<br/><small>quantidade, motivo da troca, Fazer entrega,<br/>senha do funcionário</small>\"]\n  n4[\"4. Separar o EPI e identificar o destino\"]\n  d4{\"Destino?\"}:::dec\n  n5a[\"5. Pedir a entrega ao<br/>motorista do almoxarifado\"]\n  n5b[\"5. Plantonista do dia faz a entrega<br/><small>conforme a logística</small>\"]\n  n6[\"6. Entregar no local e registrar com foto\"]\n  e([\"Entrega do EPI concluída\"]):::start\n  s --> n1 --> n2 --> d2\n  d2 -->|Sim| n3\n  d2 -->|Não| g2\n  n3 --> n4 --> d4\n  d4 -->|Depot| n5a --> n6\n  d4 -->|RH| n5b --> n6\n  n6 --> e"},
+
+ {"id":"wi007","group":"Recebimento de material","code":"WI007","title":"Recebimento e Armazenamento de Materiais Estocáveis",
+  "meta":[["Versão","1.0"],["Emissão","14/07/2026"],["Processo","Recebimento de Material"],["Criação","Zenaide Ellen"],["Aprovação","Italo da Silva"],["HSSE","não preenchido"]],
+  "notes":[["revisar","As saídas para a WI005 (divergência) e para a WI006 (item GPG) são deduções minhas. A WI007 não diz o que fazer quando a conferência falha."],["lacuna","Etapa 6: não diz o que fazer se o item não tiver localização na planilha Nova Localização 2026."],["revisar","No PDF as etapas 5 e 6 estão sem número. O campo HSSE está vazio."]],
+  "src":"flowchart TD\n  s([\"Transportadora ou motorista APM<br/>entrega material com NF\"]):::start\n  n1[\"1. Receber o material com a nota fiscal\"]\n  n2[\"2. Conferir a NF com o pedido de compra<br/><small>IFS · Purchase Order: part no estocável (GPN),<br/>coordinator PEC-220</small>\"]\n  d2{\"Item GPN e<br/>coordinator PEC-220?\"}:::dec\n  r2[\"Item de aplicação direta (GPG)<br/>ver WI006\"]:::ref\n  n3[\"3. Verificar se o material confere<br/><small>quantidade, marca, referências</small>\"]\n  d3{\"Confere com<br/>a ordem de compra?\"}:::dec\n  r3[\"Tratar divergência<br/>ver WI005\"]:::ref\n  n4[\"4. Imprimir as etiquetas<br/><small>IFS · Inventory Part in Stock › part no ›<br/>Print Barcode Label Without Barcode ID</small>\"]\n  n5[\"5. Identificar o material com as etiquetas<br/><small>conforme as quantidades recebidas</small>\"]\n  n6[\"6. Estocar na localização correta<br/><small>Teams · planilha Nova Localização 2026,<br/>pasta Alinhamento Plantonistas</small>\"]\n  e([\"Material armazenado\"]):::start\n  s --> n1 --> n2 --> d2\n  d2 -->|Sim| n3\n  d2 -->|Não| r2\n  n3 --> d3\n  d3 -->|Sim| n4\n  d3 -->|Não| r3\n  n4 --> n5 --> n6 --> e"},
+
+ {"id":"wi006","group":"Recebimento de material","code":"WI006","title":"Identificação e Separação de Itens de Aplicação Direta",
+  "meta":[["Versão","1.0"],["Emissão","10/07/2026"],["Processo","Separação de Material"],["Criação","Zenaide Ellen"],["Aprovação","Italo da Silva"],["HSSE","não preenchido"]],
+  "notes":[["lacuna","Não diz o que acontece se o solicitante não retirar o material em 24 horas."],["revisar","A saída para a WI007 (item GPN) é dedução minha. A WI006 não diz o que fazer se o part no não for GPG."],["revisar","O campo HSSE está vazio no cabeçalho."]],
+  "src":"flowchart TD\n  s([\"Transportadora ou motorista APM<br/>entrega material com NF\"]):::start\n  n1[\"1. Receber o material com a nota fiscal\"]\n  n2[\"2. Conferir a NF com o pedido de compra<br/><small>IFS · Purchase Order: part no genérico (GPG);<br/>coordinator indica a área</small>\"]\n  d2{\"Item GPG?\"}:::dec\n  r2[\"Item estocável (GPN)<br/>ver WI007\"]:::ref\n  n3[\"3. Localizar o requisitante<br/><small>IFS · Requisition No › F9 ›<br/>Purchase Requisition › Requisitioner</small>\"]\n  n4[\"4. Identificar o material com cópia da NF<br/><small>requisitante e área escritos com pincel escuro</small>\"]\n  n5[\"5. Separar na área de aplicação direta<br/><small>conforme o nível da área solicitante</small>\"]\n  e([\"Solicitante retira em até 24 horas\"]):::start\n  s --> n1 --> n2 --> d2\n  d2 -->|Sim| n3\n  d2 -->|Não| r2\n  n3 --> n4 --> n5 --> e"},
+
+ {"id":"wi005","group":"Recebimento de material","code":"WI005","title":"Tratativas de Divergências de Materiais Estocáveis",
+  "meta":[["Versão","1.0"],["Emissão","30/06/2026"],["Processo","Recebimento de Material"],["Criação","Zenaide Ellen"],["Aprovação","Italo da Silva"],["HSSE","não preenchido"]],
+  "notes":[["lacuna","Não diz quem retira o material da área de devolução nem em quanto tempo."],["revisar","A saída “sem divergência → WI007” é dedução minha, para fechar o fluxo."],["revisar","No PDF as etapas 5 e 6 estão sem número. O campo HSSE está vazio."]],
+  "src":"flowchart TD\n  s([\"Transportadora ou motorista APM<br/>entrega material com NF\"]):::start\n  n1[\"1. Receber o material com a nota fiscal\"]\n  n2[\"2. Conferir NF, material e pedido<br/><small>IFS · Purchase Order: valor, quantidade,<br/>CNPJ do fornecedor e da APM, part number</small>\"]\n  d2{\"Há divergência?\"}:::dec\n  r2[\"Recebimento normal<br/>ver WI007\"]:::ref\n  n3[\"3. Registrar a divergência com fotos<br/><small>diferenças entre o item correto e o recebido</small>\"]\n  n4[\"4. Recusar a NF no verso<br/><small>carimbo, motivo, data e horário;<br/>fotografar a NF recusada</small>\"]\n  n5[\"5. Informar o analista de almoxarifado<br/><small>Outlook · motivo, fotos e pedido de compra</small>\"]\n  n6[\"6. Separar na área de materiais para devolução<br/><small>embalado, NF de origem, motivo escrito na caixa</small>\"]\n  e([\"Material aguardando devolução\"]):::start\n  s --> n1 --> n2 --> d2\n  d2 -->|Não| r2\n  d2 -->|Sim| n3\n  n3 --> n4 --> n5 --> n6 --> e"},
+
+ {"id":"wi004","group":"Estorno","code":"WI004","title":"Processo de Estorno de Materiais Estocáveis",
+  "meta":[["Versão","1.0"],["Emissão","17/06/2026"],["Processo","Estorno de Material"],["Criação","Zenaide Ellen"],["Aprovação","Felipe Marques"],["HSSE","não preenchido"]],
+  "notes":[["lacuna","Etapa 2: não diz o que fazer se a gerência de manutenção não aprovar o estorno."],["lacuna","Etapa 3: não diz o que fazer se o material voltar sujo, sem embalagem ou com defeito."],["lacuna","Não diz onde guardar fisicamente o material estornado depois do lançamento no IFS."],["revisar","O campo HSSE está vazio no cabeçalho."]],
+  "src":"flowchart TD\n  s([\"Líder de execução envia e-mail de estorno<br/><small>motivo, task, equipamento, descrição, código</small>\"]):::start\n  n1[\"1. Receber a solicitação<br/><small>Outlook</small>\"]\n  n2[\"2. Aguardar aprovação da gerência de manutenção<br/><small>Outlook</small>\"]\n  d2{\"Gerência aprovou?\"}:::dec\n  g2[\"Não descrito na WI\"]:::gap\n  n3[\"3. Conferir o material devolvido\"]\n  d3{\"Limpo, embalado<br/>e sem defeito?\"}:::dec\n  g3[\"Não descrito na WI\"]:::gap\n  n4[\"4. Estornar no IFS<br/><small>Work Task › Material Requisition Unissue ›<br/>Unissue Quantity › salvar</small>\"]\n  n5[\"5. Registrar fotos e responder o e-mail<br/><small>Outlook · “Estorno Realizado!”</small>\"]\n  e([\"Estorno concluído\"]):::start\n  s --> n1 --> n2 --> d2\n  d2 -->|Sim| n3\n  d2 -->|Não| g2\n  n3 --> d3\n  d3 -->|Sim| n4\n  d3 -->|Não| g3\n  n4 --> n5 --> e"}
+]
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById('wi-data').textContent);
+  const byId = Object.fromEntries(DATA.map(w => [w.id, w]));
+  const $ = id => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  let current = null, seq = 0, timer = null;
+
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  function classDefs() {
+    const c = n => tok('--' + n);
+    return [
+      `classDef default fill:${c('surface')},stroke:${c('accent')},stroke-width:1.5px,color:${c('ink')}`,
+      `classDef start fill:${c('accent')},stroke:${c('accent')},color:${c('on-accent')}`,
+      `classDef dec fill:${c('accent-soft')},stroke:${c('accent')},stroke-width:1.5px,color:${c('ink')}`,
+      `classDef hsse fill:${c('hsse-soft')},stroke:${c('hsse')},stroke-width:1.5px,color:${c('ink')}`,
+      `classDef gap fill:${c('gap-soft')},stroke:${c('gap')},stroke-width:1.5px,stroke-dasharray:5 4,color:${c('gap')}`,
+      `classDef ref fill:${c('surface')},stroke:${c('muted')},stroke-width:1.5px,stroke-dasharray:3 3,color:${c('ink')}`
+    ].join('\n');
+  }
+
+  function initMermaid() {
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      theme: 'base',
+      flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true, nodeSpacing: 36, rankSpacing: 40 },
+      themeVariables: {
+        fontFamily: 'Barlow, system-ui, sans-serif',
+        fontSize: '14px',
+        primaryColor: tok('--surface'),
+        primaryTextColor: tok('--ink'),
+        primaryBorderColor: tok('--accent'),
+        lineColor: tok('--muted'),
+        textColor: tok('--ink'),
+        edgeLabelBackground: tok('--surface'),
+        clusterBkg: tok('--bg'),
+        clusterBorder: tok('--line'),
+        titleColor: tok('--muted')
+      }
+    });
+  }
+
+  async function draw(src) {
+    const id = 'fluxo' + (++seq);
+    const err = $('render-error');
+    try {
+      initMermaid();
+      const { svg } = await mermaid.render(id, src + '\n' + classDefs());
+      if (id !== 'fluxo' + seq) return;
+      $('diagram').innerHTML = svg;
+      err.hidden = true;
+      return true;
+    } catch (e) {
+      document.getElementById('d' + id)?.remove();
+      err.textContent = 'Não consegui desenhar: ' + (e && e.message ? e.message.split('\n').slice(0, 3).join('\n') : e);
+      err.hidden = false;
+      return false;
+    }
+  }
+
+  function sourceFor(w) { return store.get('fluxo:' + w.id) ?? w.src; }
+
+  function renderIndex() {
+    const nav = $('index');
+    const groups = [];
+    DATA.forEach(w => {
+      let g = groups.find(x => x.name === w.group);
+      if (!g) groups.push(g = { name: w.group, items: [] });
+      g.items.push(w);
+    });
+    nav.innerHTML = '';
+    groups.forEach(g => {
+      const box = document.createElement('div');
+      box.className = 'group';
+      box.innerHTML = `<p class="group-label">${g.name}</p>`;
+      g.items.forEach(w => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.dataset.id = w.id;
+        b.innerHTML = `<span class="code">${w.code}</span><span class="title">${w.id === 'mapa' ? 'Todas as WIs' : w.title}</span>`;
+        b.addEventListener('click', () => select(w.id, true));
+        box.appendChild(b);
+      });
+      nav.appendChild(box);
+    });
+  }
+
+  function select(id, push) {
+    const w = byId[id] || byId.mapa;
+    current = w;
+    document.querySelectorAll('nav.index button').forEach(b => b.setAttribute('aria-current', b.dataset.id === w.id ? 'true' : 'false'));
+    $('wi-code').textContent = w.id === 'mapa' ? 'Visão geral' : 'BRPEC-WH-WHA-' + w.code;
+    $('wi-title').textContent = w.title;
+    $('wi-meta').innerHTML = w.meta.map(([k, v]) =>
+      `<div><dt>${k}</dt><dd class="${v === 'não preenchido' ? 'empty' : ''}">${v}</dd></div>`).join('');
+    const labels = { lacuna: 'Lacuna', revisar: 'Revisar', nota: 'Nota' };
+    $('notes').innerHTML = w.notes.map(([t, txt]) => `<li><span class="tag ${t}">${labels[t]}</span><span>${txt}</span></li>`).join('');
+    $('notes-section').querySelector('h3').textContent = w.id === 'mapa' ? 'Como ler' : 'Pontos para revisar na WI';
+    $('diagram').setAttribute('aria-label', 'Fluxograma: ' + w.title);
+    const src = sourceFor(w);
+    $('src').value = src;
+    $('edited-flag').hidden = src === w.src;
+    $('status').textContent = '';
+    draw(src);
+    if (push) { try { history.replaceState(null, '', '#' + w.id); } catch (e) {} }
+  }
+
+  $('src').addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const v = $('src').value;
+      if (await draw(v)) {
+        if (v === current.src) store.del('fluxo:' + current.id); else store.set('fluxo:' + current.id, v);
+        $('edited-flag').hidden = v === current.src;
+        $('status').textContent = 'Salvo neste navegador';
+      }
+    }, 350);
+  });
+
+  $('reset').addEventListener('click', () => {
+    store.del('fluxo:' + current.id);
+    select(current.id, false);
+    $('status').textContent = 'Fluxo original restaurado';
+  });
+
+  $('copy').addEventListener('click', () => {
+    const v = $('src').value;
+    const fallback = () => { $('src').focus(); $('src').select(); $('status').textContent = 'Código selecionado. Use Ctrl+C para copiar.'; };
+    try {
+      navigator.clipboard.writeText(v).then(() => { $('status').textContent = 'Código copiado'; }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  const redraw = () => current && draw($('src').value);
+  try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw); } catch (e) {}
+  new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  renderIndex();
+  const start = (location.hash || '').slice(1);
+  select(byId[start] ? start : 'mapa', false);
+})();
+</script>
