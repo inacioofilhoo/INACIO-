@@ -1,6 +1,6 @@
 # Fluxos do Almoxarifado PEC
 
-Fluxogramas desenhados a partir das Work Instructions aprovadas do Almoxarifado (BRPEC-WH-WHA). Versão interativa, com editor: `index.html`.
+Fluxogramas desenhados a partir das Work Instructions aprovadas do Almoxarifado (BRPEC-WH-WHA). Versão executiva interativa (nota de consistência, matriz de inconsistências, achados e raio-X em raias): `index.html`.
 
 Legenda: azul cheio = início/fim · losango = decisão · laranja = ponto de HSSE · vermelho tracejado = lacuna (a WI não diz) · cinza tracejado = ligação com outra WI.
 
