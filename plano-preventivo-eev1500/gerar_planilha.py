@@ -1,3 +1,4 @@
+import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.formatting.rule import CellIsRule, FormulaRule
@@ -107,6 +108,13 @@ rows = [
     ("'Interruptor de polimento'", "Tabela 5, item 15: provável erro de tradução (interruptor de fim de curso/limite). Confirmar."),
     ("Substituto do óleo", "O manual aceita SAE 20W/20 no lugar do HLP68 'se for difícil comprar'. Não recomendado misturar óleos: use sempre HLP ISO VG 46 e só troque de tipo com o sistema drenado e com aval da AT."),
     ("Lacunas", "O manual não cita inspeção de correntes de elevação nem dos garfos (trincas/desgaste), essenciais num mastro de 5,6 m. Foram incluídas como 'Boa prática' (referência: ISO 5057, inspeção de garfos)."),
+    ("Nível do eletrólito", "O manual do carregador fala em ~1 cm acima das placas; o manual da empilhadeira, em 15–25 mm acima da placa protetora. Adotado o da empilhadeira (específico da bateria de tração)."),
+    ("Alimentação do carregador", "A Tabela 3 do CIB 330 E diz bivolt automático 100–240 V; a Tabela 2 diz 220 V ± 10%. Adotado: tomada de 220 V em circuito exclusivo."),
+    ("", ""),
+    ("ZONAS E PLANO DO ENGENHEIRO", ""),
+    ("Zonas (Z1–Z8, ZC)", "Cada tarefa tem a coluna 'Zona', que aponta o local na aba 'Mapa de Zonas' (foto do manual com as áreas numeradas). A aba 'Figuras do Manual' traz os recortes de cada área: timão, painel, freio, unidade hidráulica e carregador. Z4 e Z7 ficam dentro do chassi; a posição exata deve ser confirmada na primeira abertura com a Assistência."),
+    ("Plano do engenheiro", "Todas as 31 tarefas do plano do engenheiro (empilhadeira + carregador CIB 330 E) foram incorporadas. A aba 'Comparativo Engenheiro' mostra, item a item, onde cada uma está e o que foi ajustado e por quê."),
+    ("Referências", "Ref. sem prefixo (ou 'EEV') = manual da empilhadeira EEV 1500. 'CIB' = manual do carregador CIB 330 E."),
 ]
 r = 4
 for k, v in rows:
@@ -166,6 +174,12 @@ params = [
     ("Hidráulico", "Volume de óleo hidráulico", 12, "L", "Item 9.3"),
     ("Hidráulico", "Pressão da válvula de segurança (1.500 kg)", 16, "MPa", "Item 12.1 — SOMENTE Assistência Autorizada ajusta"),
     ("Cabo", "Comprimento máximo do cabo da bateria externa (reboque)", 6, "m", "Item 4.1.2 — com bateria externa é proibido levantar carga"),
+    ("Carregador", "Modelo / tensão de saída", "CIB 330 E / 24 V", "", "Manual CIB, Tabela 3"),
+    ("Carregador", "Corrente de carga para bateria de 175–240 Ah", 30, "A", "Manual CIB, Tabela 4 (EEV: 216 Ah)"),
+    ("Carregador", "Tipo de bateria no visor", "STD", "", "Chumbo-ácido convencional (CIB 2.5.i)"),
+    ("Carregador", "Alimentação adotada", "220 V ± 10%", "", "CIB Tabela 2 (a Tabela 3 diz bivolt 100–240 V)"),
+    ("Carregador", "Corrente de entrada", 5.5, "A", "CIB Tabela 3"),
+    ("Carregador", "Cabos de alimentação e de garra", 1.8, "m", "CIB Tabela 3"),
 ]
 for i, p in enumerate(params, 5):
     for j, v in enumerate(p, 1):
@@ -192,7 +206,7 @@ comps = [
     ("C06", "Garfos", "Trinca no calcanhar, deformação, desgaste", "Ruptura do garfo com carga", 5, 5, 3, 2, "Visual diário; inspeção anual detalhada (boa prática, ISO 5057)"),
     ("C07", "Contator principal e controle de elevação", "Contatos soldados ou carbonizados", "Perda de controle: garfo continua subindo após soltar o botão (item 5.3.1)", 5, 4, 5, 3, "Inspeção semanal/mensal; polimento trimestral; substituir por condição (N3)"),
     ("C08", "Bateria de tração 24 V – 216 Ah", "Eletrólito baixo, densidade baixa, vazamento de ácido, sulfatação", "Queimadura química, explosão por hidrogênio, parada", 4, 2, 5, 4, "Carga diária correta; eletrólito e densidade semanais; equalização a cada 2–3 meses"),
-    ("C09", "Carregador e conexão de carga", "Conector danificado, aquecimento, curva de carga errada", "Incêndio, sobrecarga ou subcarga da bateria", 4, 1, 4, 3, "Visual diário; mensal"),
+    ("C09", "Carregador CIB 330 E e conexão de carga", "Conector danificado, aquecimento, curva de carga errada", "Incêndio, sobrecarga ou subcarga da bateria", 4, 1, 4, 3, "Visual diário; mensal"),
     ("C10", "Timão, direção e interruptor de trava (posições A/B/C)", "Trava não atua fora do ângulo de 45° ± 35°, folga, rolamento preso", "Máquina se desloca quando deveria estar travada; direção presa", 4, 2, 4, 3, "Teste diário; inspeção semanal e mensal"),
     ("C11", "Chicotes, fusíveis e terminais", "Terminal frouxo/oxidado, isolação danificada", "Curto-circuito, incêndio, parada", 4, 2, 5, 3, "Inspeção mensal; limpeza só com ar comprimido"),
     ("C12", "Fixadores estruturais (pinos e parafusos)", "Afrouxamento", "Soltura de roda ou componente; acidente", 4, 3, 3, 3, "Verificação diária visual; reaperto semanal"),
@@ -236,8 +250,20 @@ CLS = {c[0]: classe_py(c) for c in comps}
 wpl = wb.create_sheet("Plano Preventivo")
 title(wpl, "Plano preventivo — atividades, frequência, executor e critério de aceitação",
       "Classe puxada da aba Criticidade. Vale o que vencer primeiro: horas (horímetro) ou calendário. Ref. = item/tabela do manual.")
-cols = ["Cód.", "Frequência", "Gatilho", "Comp.", "Classe", "Sistema", "Atividade", "Como fazer / critério de aceitação", "Executor", "EPI", "Ferramentas e materiais", "Ref. manual"]
-header(wpl, 4, cols, [7, 13, 12, 7, 7, 16, 34, 62, 14, 22, 26, 14])
+cols = ["Cód.", "Frequência", "Gatilho", "Comp.", "Classe", "Zona", "Sistema", "Atividade", "Como fazer / critério de aceitação", "Executor", "EPI", "Ferramentas e materiais", "Ref. manual"]
+header(wpl, 4, cols, [7, 13, 12, 7, 7, 8, 16, 34, 62, 14, 22, 26, 16])
+
+# Zona padrão por componente (ver aba Mapa de Zonas) e exceções por tarefa
+ZONA_COMP = {"C01": "Z7", "C02": "Z1", "C03": "Z2", "C04": "Z4", "C05": "Z5", "C06": "Z6", "C07": "Z4", "C08": "Z3",
+             "C09": "ZC", "C10": "Z1", "C11": "Z4", "C12": "Z6/Z7", "C13": "Z6/Z7", "C14": "Z4/Z7", "C15": "Z7",
+             "C16": "Z2", "C17": "Z1", "C18": "Z8"}
+ZONA_TASK = {"D01": "Z2", "D04": "Z4/Z5", "M03": "Z4/Z5", "K05": "Z5", "K07": "Z4/Z5", "S02": "Z7", "M07": "Z3/Z4",
+             "P02": "Geral", "P03": "Geral", "P04": "Geral", "P01": "Z3/ZC"}
+
+
+def zona(t):
+    return ZONA_TASK.get(t[0], ZONA_COMP[t[3]])
+
 
 E_BAT = "Óculos de ampla visão ou protetor facial, luva nitrílica/PVC, avental de PVC, botina"
 E_MEC = "Óculos, luva de vaqueta ou nitrílica, botina"
@@ -258,16 +284,16 @@ tasks = [
     ("D10", "1-Diário (pré-uso)", "Cada turno", "C07", "Elevação", "Funções de elevação e descida", "Subir e descer o garfo sem carga até ~1 m: movimento suave, para ao soltar o botão, sem ruído anormal. Garfo que continua subindo = cortar energia (emergência) e BLOQUEAR.", "N1", E_OP, "—", "5.1.3 / 5.3.1 / Tab. 3-15"),
     ("D11", "1-Diário (pré-uso)", "Cada turno", "C05", "Mastro", "Mastro, correntes e proteção do mastro", "Proteção do mastro montada e íntegra; correntes sem elo travado ou trinca; sem objetos presos. Proteção ausente = proibido operar.", "N1", E_OP, "Lanterna", "3.8 / Boa prática"),
     ("D12", "1-Diário (pré-uso)", "Cada turno", "C06", "Garfos", "Garfos", "Sem trinca (principalmente na dobra/calcanhar), sem empeno, pontas alinhadas. Dúvida = bloquear e chamar N2.", "N1", E_OP, "Lanterna", "8.b / Boa prática"),
-    ("D13", "1-Diário (pré-uso)", "Cada turno", "C12", "Estrutura", "Fixadores visíveis", "Nenhum pino ou parafuso faltando ou solto nas rodas e no chassi.", "N1", E_OP, "—", "Tab. 3-7"),
+    ("D13", "1-Diário (pré-uso)", "Cada turno", "C12", "Estrutura", "Fixadores e quadro", "Nenhum pino, parafuso ou porca faltando ou solto nas rodas e no chassi; quadro sem rachadura ou deformação.", "N1", E_OP, "—", "Tab. 3-7"),
     ("D14", "1-Diário (pré-uso)", "Cada turno", "C13", "Rodas", "Rodas", "Sem pedaços faltando, sem fita/arame enrolado, sem achatamento visível. Máquina parada muito tempo pode ter roda marcada: some após rodar um pouco (item 4.1.6).", "N1", E_OP, "—", "Tab. 3-8"),
     ("D15", "1-Diário (pré-uso)", "Cada turno", "C16", "Painel", "Painel e chave", "Ligar a trava elétrica: painel acende e mostra estado normal, sem código de falha. Anotar qualquer código no checklist.", "N1", E_OP, "—", "Tab. 3-13, 3-14"),
     ("D16", "1-Diário (pré-uso)", "Cada turno", "C17", "Segurança", "Buzina", "Pressionar: deve soar alto e claro.", "N1", E_OP, "—", "Tab. 3-12"),
     ("D17", "1-Diário (pré-uso)", "Cada turno", "C18", "Segurança", "Adesivos e placa de capacidade", "Legíveis e no lugar (capacidade, advertências, pontos de içamento).", "N1", E_OP, "—", "8.a"),
     # Pós-uso
-    ("P01", "2-Diário (pós-uso)", "Fim do turno", "C08", "Bateria", "Carga da bateria", "Estacionar em área ventilada, sem chamas, sem fumar. Conectar o carregador (24 V / 30 A). Não interromper a carga comum (~12 h). Não deixar a bateria descarregada parada. Nunca carregar ligando o plugue direto na rede CA.", "N1", E_BAT, "Carregador 24 V / 30 A", "6.1 / 6.3 / Regra 16"),
-    ("P02", "2-Diário (pós-uso)", "Fim do turno", "C04", "Geral", "Estacionamento seguro", "Local plano e designado (nunca em rampa), garfo na posição mais baixa, timão na posição intermediária, chave desligada e retirada.", "N1", E_OP, "—", "3.1.1"),
-    ("P03", "2-Diário (pós-uso)", "Fim do turno", "C11", "Geral", "Limpeza a seco", "Remover manchas e sujeira com pano seco. Parte elétrica só com ar comprimido. NUNCA usar água.", "N1", E_OP, "Pano, ar comprimido", "3.1.2 / 8"),
-    ("P04", "2-Diário (pós-uso)", "Fim do turno", "C12", "Geral", "Registro de anomalias", "Anotar no checklist qualquer deformação, trinca, ruído, vazamento ou código de falha e avisar o líder.", "N1", "—", "Checklist diário", "8.b"),
+    ("P01", "2-Diário (pós-uso / recarga)", "Fim do turno", "C08", "Bateria", "Carga da bateria", "Seguir R01 a R06 (carregador CIB 330 E). Não interromper a carga comum (~12 h). Não deixar a bateria descarregada parada. Nunca carregar ligando o plugue da máquina direto na rede CA.", "N1", E_BAT, "Carregador CIB 330 E", "6.1 / 6.3 / Regra 16"),
+    ("P02", "2-Diário (pós-uso / recarga)", "Fim do turno", "C04", "Geral", "Estacionamento seguro", "Local plano e designado (nunca em rampa), garfo na posição mais baixa, timão na posição intermediária, chave desligada e retirada.", "N1", E_OP, "—", "3.1.1"),
+    ("P03", "2-Diário (pós-uso / recarga)", "Fim do turno", "C11", "Geral", "Limpeza a seco", "Remover manchas e sujeira com pano seco. Parte elétrica só com ar comprimido. NUNCA usar água.", "N1", E_OP, "Pano, ar comprimido", "3.1.2 / 8"),
+    ("P04", "2-Diário (pós-uso / recarga)", "Fim do turno", "C12", "Geral", "Registro de anomalias", "Anotar no checklist qualquer deformação, trinca, ruído, vazamento ou código de falha e avisar o líder.", "N1", "—", "Checklist diário", "8.b"),
     # Semanal 50 h N2
     ("S01", "3-Semanal", "50 h / 7 dias", "C01", "Freio", "Medição da folga do freio", "Máquina bloqueada (ver LOTO). Medir com calibrador de lâminas a folga entre placa do freio e aço magnético em 3 pontos. 0,2–0,5 mm = OK; >0,5 mm = solicitar ajuste N3; >0,8 mm = BLOQUEAR.", "N2 (N3 na garantia)", E_MEC, "Calibrador de lâminas 0,05–1,00 mm", "Tab. 4-3 / 9.6"),
     ("S02", "3-Semanal", "50 h / 7 dias", "C01", "Freio", "Limpeza da engrenagem de giro", "Remover sujeira e óleo acumulados na engrenagem de giro do freio/direção com pincel e pano.", "N2", E_MEC, "Pincel, pano, desengraxante não corrosivo", "Tab. 4-2"),
@@ -285,7 +311,7 @@ tasks = [
     ("M04", "4-Mensal", "200 h / 30 dias", "C05", "Mastro", "Mastro, roletes e correntes", "Garfo abaixado e calçado. Roletes girando livres, sem folga; correntes lubrificadas, sem elo duro, trinca ou alongamento visível; mastro sem deformação.", "N2", E_MEC, "Lanterna, lubrificante para correntes", "Boa prática"),
     ("M05", "4-Mensal", "200 h / 30 dias", "C10", "Direção", "Timão: estanqueidade, giro e trava", "Giro suave, sem folga; ruído da trava presente; quadro e prendedores sem trinca e apertados.", "N2", E_MEC, "Jogo de chaves", "Tab. 5-3, 5-5, 5-6"),
     ("M06", "4-Mensal", "200 h / 30 dias", "C13", "Rodas", "Haste de ligação e transportador de roda", "Sem trinca, flexão ou deformação; lubrificar pontos de graxa com graxa de lítio NLGI 3. Medir diâmetro das rodas (limites na aba Parâmetros).", "N2", E_MEC, "Pistola de graxa, graxa lítio NLGI 3, paquímetro", "Tab. 5-7"),
-    ("M07", "4-Mensal", "200 h / 30 dias", "C11", "Elétrico", "Fusíveis, cablagem e terminais", "Bloqueado e capacitores descarregados. Fusíveis íntegros; cabos flexíveis, sem ressecamento ou corte; terminais firmes e sem oxidação.", "N2", E_MEC, "Multímetro CAT III, spray limpa-contatos", "Tab. 5-20, 5-21"),
+    ("M07", "4-Mensal", "200 h / 30 dias", "C11", "Elétrico", "Fusíveis, cablagem e terminais", "Bloqueado e capacitores descarregados. Fusíveis íntegros; cabos flexíveis, sem ressecamento ou corte; terminais firmes e sem oxidação; conector da bateria (175 A) bem encaixado e sem marca de aquecimento.", "N2", E_MEC, "Multímetro CAT III, spray limpa-contatos", "Tab. 5-20, 5-21"),
     ("M08", "4-Mensal", "200 h / 30 dias", "C14", "Motores", "Escovas e diodos dos motores", "Verificar desgaste das escovas e estado dos diodos nos motores de tração, elevação e direção.", "N3", E_MEC, "Multímetro, ferramental da AT", "Tab. 5-17 a 5-19"),
     ("M09", "4-Mensal", "200 h / 30 dias", "C08", "Bateria", "Eletrólito completo", "Nível, densidade e limpeza conforme S04–S06; registrar densidade de cada célula.", "N2", E_BAT, "Densímetro, água destilada", "Tab. 5-11"),
     ("M10", "4-Mensal", "200 h / 30 dias", "C09", "Carregador", "Carregador e tomada", "Conector sem trinca nem aquecimento; cabo íntegro; área de carga ventilada, sinalizada, com extintor e sem material combustível.", "N2", E_MEC, "—", "2.1.4.c / 6.1"),
@@ -308,21 +334,34 @@ tasks = [
     ("A02", "9-Anual", "12 meses / 2.400 h", "C05", "Mastro", "Correntes e mastro completo", "Medir alongamento das correntes, verificar pinos, ancoragens e roletes; lubrificar.", "N3", E_MEC, "Régua/gabarito de corrente", "Boa prática"),
     ("A03", "9-Anual", "12 meses / 2.400 h", "C04", "Hidráulico", "Pressão da válvula de segurança", "Somente AT: medir com manômetro ≥ 20 MPa. Esperado 16 MPa (1.500 kg). Usuário nunca ajusta.", "N3", E_MEC, "Manômetro ≥ 20 MPa", "12.1"),
     ("A04", "9-Anual", "12 meses / 2.400 h", "C08", "Bateria", "Avaliação da bateria", "Densidade de todas as células após carga completa e equalização; histórico de quedas de autonomia. Bateria tem vida útil limitada: planejar substituição.", "N2", E_BAT, "Densímetro, multímetro", "6.7 / Boa prática"),
+    # Carregador CIB 330 E (plano do engenheiro + manual do carregador). Ref. "CIB" = manual do carregador.
+    ("R01", "2-Diário (pós-uso / recarga)", "Cada recarga", "C09", "Carregador", "Posição do carregador", "Carregador o mais longe da bateria que os cabos permitirem. Nunca sobre a bateria (os gases ácidos destroem o circuito) e nunca a bateria sobre o carregador.", "N1", E_OP, "—", "CIB 1.4.d/e/h"),
+    ("R02", "2-Diário (pós-uso / recarga)", "Cada recarga", "C09", "Carregador", "Área de recarga", "Local plano, coberto (uso interno), bem ventilado, sem chama, faísca ou fumo; extintor por perto; bateria a pelo menos 2 m de fonte de calor. Nunca com mãos ou roupas molhadas.", "N1", E_BAT, "Extintor", "CIB 1.1, 1.3.b / EEV 2.1.4.c, 6.5.a"),
+    ("R03", "2-Diário (pós-uso / recarga)", "Cada recarga", "C09", "Carregador", "Isolar a empilhadeira", "Chave da empilhadeira desligada e retirada. Desconectar o conector da bateria da máquina e ligá-lo ao conector 175 A do carregador: isso isola o sistema elétrico. Nada da máquina é acionado durante a carga.", "N1", E_BAT, "—", "EEV 6.1 / CIB 1.h, 2.5"),
+    ("R04", "2-Diário (pós-uso / recarga)", "Cada recarga", "C09", "Carregador", "Sequência de ligação", "1) Carregador fora da tomada. 2) Ligar a saída à bateria (conector 175 A; se usar garras: vermelha no +, depois preta no −). 3) Só então o plugue na tomada. Para desligar: botão ↵, plugue fora da tomada, depois desconectar a bateria.", "N1", E_BAT, "Extensão com conector 175 A", "CIB 1.2.c, 2.5.c–e, Fig. 2"),
+    ("R05", "2-Diário (pós-uso / recarga)", "Cada recarga", "C09", "Carregador", "Configuração do carregador", "No visor: 24 V · STD (chumbo-ácido convencional) · 30 A (baterias de 175 a 240 Ah; a da EEV é 216 Ah). Bateria selada só com AGM/GEL conforme o fabricante dela. Iniciar com ↵.", "N1", E_OP, "—", "CIB 2.5.f–k, Tab. 4, Fig. 3"),
+    ("R06", "2-Diário (pós-uso / recarga)", "Cada recarga", "C09", "Carregador", "Acompanhar a carga", "Visor mostra tensão, corrente e %. CONTATO RUIM = refazer a conexão. BATERIA RUIM ou ALTA TENSÃO = parar e chamar N2. Bateria aquecendo (eletrólito > 45 °C) = interromper. CARREGADA = encerrar com ↵ e desligar na ordem inversa.", "N1", E_BAT, "—", "CIB 1.e, 2.5.k–n, 2.6 / EEV 6.2.5"),
+    ("R07", "3-Semanal", "7 dias", "C09", "Carregador", "Cordão de alimentação e cabos de saída", "Carregador fora da tomada. Sem trinca, corte ou fio exposto; cabos longe de calor, óleo e cantos. Cordão danificado = não usar; troca só pela Vonder/pessoa qualificada.", "N2", E_MEC, "—", "CIB 1.3.e–f, 3.1"),
+    ("R08", "3-Semanal", "7 dias", "C09", "Carregador", "Garras e conector", "Fora da tomada e da bateria. Limpar corrosão (zinabre) com solução de água e bicarbonato de sódio; secar antes de usar. Conector 175 A sem trinca nem marca de aquecimento.", "N2", E_BAT, "Bicarbonato, escova não metálica, pano", "CIB 3.1"),
+    ("R09", "4-Mensal", "30 dias", "C09", "Carregador", "Ventoinha", "Fora da tomada e da bateria. Remover o pó das grades da ventoinha com pincel macio para evitar superaquecimento.", "N2", E_AR, "Pincel macio", "CIB 3.1 / 1.5.c"),
+    ("R10", "4-Mensal", "30 dias", "C09", "Carregador", "Carcaça e botões", "Fora da tomada e da bateria. Limpar com pano seco, nunca água. Conferir parafusos soltos e botões. Nunca abrir a carcaça: ajuste e conserto só pela Vonder.", "N2", E_MEC, "Pano seco", "CIB 1.4.a, 1.5, 3.1"),
+    ("R11", "9-Anual", "12 meses", "C09", "Carregador", "Tomada e circuito de alimentação", "Eletricista qualificado: circuito exclusivo e aterrado, 220 V ± 10%, capacidade adequada (corrente de entrada 5,5 A). Extensão só com bitola da Tab. 2: 15 m 3×1 mm² · 20 m 3×1,5 mm² · 30 m 3×2,5 mm². Sem adaptadores de plugue.", "N3 (eletricista)", E_MEC, "Multímetro, testador de tomada", "CIB 1.3.g, 1.6.1, Tab. 2 / NR-10"),
 ]
 order = {"A": 0, "B": 1, "C": 2}
 tasks.sort(key=lambda t: (t[1], order[CLS[t[3]]], t[0]))
 for i, t in enumerate(tasks, 5):
-    vals = [t[0], t[1][2:], t[2], t[3], None, t[4], t[5], t[6], t[7], t[8], t[9], t[10]]
+    vals = [t[0], t[1][2:], t[2], t[3], None, zona(t), t[4], t[5], t[6], t[7], t[8], t[9], t[10]]
     for j, v in enumerate(vals, 1):
         wpl.cell(row=i, column=j, value=v)
     wpl.cell(row=i, column=5, value=f"=INDEX(Criticidade!$J$6:$J${last_c},MATCH(D{i},Criticidade!$A$6:$A${last_c},0))")
 last_t = 4 + len(tasks)
-body(wpl, 5, last_t, 1, 12)
+body(wpl, 5, last_t, 1, 13)
 for i in range(5, last_t + 1):
-    for col in (1, 3, 4, 5, 9):
+    for col in (1, 3, 4, 5, 6, 10):
         wpl.cell(row=i, column=col).alignment = CEN
+    wpl.cell(row=i, column=6).font = Font(name=F, size=10, bold=True, color="C00000")
 classe_fmt(wpl, f"E5:E{last_t}")
-wpl.auto_filter.ref = f"A4:L{last_t}"
+wpl.auto_filter.ref = f"A4:M{last_t}"
 landscape(wpl)
 wpl.print_title_rows = "4:4"
 
@@ -433,25 +472,35 @@ wd = wb.create_sheet("Checklist Diário")
 title(wd, "Checklist diário do operador — Empilhadeira EEV 1500", "Marque C (conforme), NC (não conforme) ou NA. Qualquer NC em item ★ = NÃO OPERE: coloque a etiqueta e avise o líder.")
 for k, (lbl, col) in enumerate([("Semana de:", 1), ("Nº de série:", 4), ("Setor:", 7)]):
     wd.cell(row=3, column=col, value=lbl).font = Font(name=F, bold=True)
-header(wd, 5, ["Item", "★", "Verificar", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"], [6, 4, 70, 7, 7, 7, 7, 7, 7, 7])
-daily = [t for t in tasks if t[1].startswith("1-")]
-for i, t in enumerate(daily, 6):
+header(wd, 5, ["Item", "★", "Zona", "Verificar", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"], [6, 4, 8, 66, 7, 7, 7, 7, 7, 7, 7])
+pre = [t for t in tasks if t[1].startswith("1-")]
+pos = [t for t in tasks if t[1].startswith("2-")]
+rows_ck = [("ANTES DE USAR (início do turno)", None)] + [(None, t) for t in pre] + \
+          [("FIM DO TURNO E RECARGA", None)] + [(None, t) for t in pos]
+for i, (sec, t) in enumerate(rows_ck, 6):
+    if sec:
+        wd.cell(row=i, column=1, value=sec).font = Font(name=F, bold=True, color="FFFFFF")
+        for col in range(1, 12):
+            wd.cell(row=i, column=col).fill = HDR
+        continue
     wd.cell(row=i, column=1, value=t[0])
     wd.cell(row=i, column=2, value="★" if CLS[t[3]] == "A" else "")
-    wd.cell(row=i, column=3, value=f"{t[5]}: {t[6].split('.')[0]}.")
-end = 5 + len(daily)
+    wd.cell(row=i, column=3, value=zona(t))
+    wd.cell(row=i, column=4, value=f"{t[5]}: {t[6].split('.')[0]}.")
+end = 5 + len(rows_ck)
 extra = ["Horímetro no início", "Carga da bateria no início (%)", "Código de falha no painel (anotar)", "Operador (nome e assinatura)", "Líder: visto"]
 for k, e in enumerate(extra, end + 1):
-    wd.cell(row=k, column=3, value=e).font = Font(name=F, bold=True)
-body(wd, 6, end + len(extra), 1, 10)
+    wd.cell(row=k, column=4, value=e).font = Font(name=F, bold=True)
+body(wd, 6, end + len(extra), 1, 11)
 for i in range(6, end + len(extra) + 1):
-    for col in (1, 2):
+    for col in (1, 2, 3):
         wd.cell(row=i, column=col).alignment = CEN
+    wd.cell(row=i, column=3).font = Font(name=F, size=10, bold=True, color="C00000")
     wd.row_dimensions[i].height = 30
 dvc = DataValidation(type="list", formula1='"C,NC,NA"', allow_blank=True)
 wd.add_data_validation(dvc)
-dvc.add(f"D6:J{end}")
-wd.conditional_formatting.add(f"D6:J{end}", CellIsRule(operator="equal", formula=['"NC"'], fill=RED, font=Font(name=F, bold=True)))
+dvc.add(f"E6:K{end}")
+wd.conditional_formatting.add(f"E6:K{end}", CellIsRule(operator="equal", formula=['"NC"'], fill=RED, font=Font(name=F, bold=True)))
 wd.cell(row=end + len(extra) + 2, column=1, value="Exemplo de preenchimento: D06 Seg = C; D10 Ter = NC → máquina bloqueada, etiqueta 'NÃO OPERE', OS aberta. Pós-uso: estacionar plano, garfo no chão, chave retirada, colocar para carregar em área ventilada.").font = Font(name=F, size=9, italic=True)
 wd.page_setup.orientation = "portrait"
 wd.page_setup.fitToWidth = 1
@@ -586,6 +635,11 @@ diag = [
     ("Derrame de ácido / contato com pele ou olhos", "Pele: lavar com muita água. Olhos: lavar com muita água e procurar médico. Roupa: retirar e lavar. Piso: neutralizar com cal ou bicarbonato e lavar.", "Tombamento ou dano da bateria", "Todos (1º socorro) / N2", "6.8"),
     ("LEDs do controlador: vermelho e amarelo piscando", "Desligar, anotar o código, não religar repetidamente.", "Controlador com defeito", "N3", "Tab. 11"),
     ("Código de falha no visor", "Anotar o código no checklist/OS e reportar.", "Ver Tabelas 10 e 12 do manual (códigos 1,2 a 9,4)", "N3", "Cap. 13"),
+    ("Carregador: visor 'CONTATO RUIM'", "Desligar da tomada, refazer a conexão com a bateria e reiniciar.", "Bateria mal conectada", "N1", "CIB 2.5 / 2.6"),
+    ("Carregador: visor 'BATERIA RUIM'", "Interromper a carga e não insistir.", "Tensão muito baixa: célula aberta, em curto ou sulfatada", "N2 → técnico de baterias", "CIB 2.6"),
+    ("Carregador: visor 'ALTA TENSÃO'", "Interromper.", "Bateria não é de 24 V", "N2", "CIB 2.6"),
+    ("Carregador: bateria não aceita carga", "Conferir tomada energizada e visor aceso; bateria fria (< 5 °C) carrega devagar no início.", "Sem energia CA; conexão ruim; bateria muito descarregada ou muito fria (nunca carregar bateria congelada)", "N1 / N2", "CIB 2.6"),
+    ("Bateria aquecendo durante a carga", "Interromper a carga e chamar um especialista em baterias.", "Célula com defeito, corrente excessiva", "N2", "CIB 1.e / EEV 6.2.5"),
 ]
 for i, d in enumerate(diag, 5):
     for j, v in enumerate(d, 1):
@@ -630,6 +684,127 @@ for i, d in enumerate(ins, 5):
 body(wf, 5, 4 + len(ins), 1, 5)
 landscape(wf)
 
+# ---------------------------------------------------------------- MAPA DE ZONAS
+from openpyxl.drawing.image import Image as XLImage
+
+FIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figuras")
+
+
+def add_img(ws, fname, anchor, width):
+    img = XLImage(os.path.join(FIG, fname))
+    ratio = width / img.width
+    img.width, img.height = width, int(img.height * ratio)
+    ws.add_image(img, anchor)
+    return img.height
+
+
+wz = wb.create_sheet("Mapa de Zonas")
+title(wz, "Mapa de zonas — onde fica cada manutenção", "Imagem recortada do manual Vonder. A coluna 'Zona' do Plano e do Checklist aponta para estas áreas.")
+add_img(wz, "00_mapa_zonas.png", "A4", 980)
+zrow = 4
+wz.column_dimensions["A"].width = 18
+for col in "BCDEFGHIJKLMN":
+    wz.column_dimensions[col].width = 10
+zt = [
+    ("Zona", "Onde fica", "O que é verificado ali", "Figura"),
+    ("Z1", "Timão (cabeça e base)", "Botões de emergência/reversão, aceleração, modo lento, elevação e velocidade de elevação, buzina; interruptor de trava A/B/C", "01_Z1"),
+    ("Z2", "Capô / painel", "Chave, medidor de carga da bateria, botão liga/desliga de emergência, código de falha", "02_Z2"),
+    ("Z3", "Bateria (porta lateral)", "Bateria 24 V – 216 Ah, eletrólito, densidade, limpeza, conector da bateria", "—"),
+    ("Z4", "Compartimento técnico (dentro do chassi)", "Unidade hidráulica: bomba, reservatório 12 L, válvulas, filtro; contator, controlador, fusíveis, chicotes", "04_Z4"),
+    ("Z5", "Mastro", "Cilindro de elevação e vedações, correntes, roletes, tela de proteção, ponto de içamento", "—"),
+    ("Z6", "Garfos e rodas do garfo", "Trincas e desgaste dos garfos; rodas Ø 80 mm (mín. 76 mm) e rolamentos", "—"),
+    ("Z7", "Base sob o timão", "Roda de tração Ø 250 mm (mín. 237,5 mm), motor de tração, freio eletromagnético, caixa de redução, engrenagem de giro", "03_Z7"),
+    ("Z8", "Adesivos e placas", "Placa de capacidade, advertências, identificação", "—"),
+    ("ZC", "Carregador CIB 330 E (estação de carga)", "Posição, ligação, configuração 24 V · STD · 30 A, cabos, garras, ventoinha, tomada", "06 a 09_ZC"),
+]
+r0 = 4
+c0 = 16  # coluna P
+for k, w in zip(range(c0, c0 + 4), [7, 26, 60, 12]):
+    wz.column_dimensions[get_column_letter(k)].width = w
+for i, row in enumerate(zt):
+    for j, v in enumerate(row):
+        cell = wz.cell(row=r0 + i, column=c0 + j, value=v)
+        cell.border = BOX
+        cell.alignment = WRAP
+        cell.font = Font(name=F, size=10, bold=(i == 0 or j == 0), color=("FFFFFF" if i == 0 else ("C00000" if j == 0 else "000000")))
+        if i == 0:
+            cell.fill = HDR
+landscape(wz)
+
+# ---------------------------------------------------------------- FIGURAS DO MANUAL
+wfg = wb.create_sheet("Figuras do Manual")
+title(wfg, "Figuras recortadas dos manuais (empilhadeira e carregador)", "Use para localizar o componente antes de executar a tarefa. Fonte: manuais Vonder EEV 1500 e CIB 330 E.")
+for col in "ABCDEFGHIJKLMNOPQRST":
+    wfg.column_dimensions[col].width = 10
+figs = ["01_Z1_timao_controles.png", "02_Z2_painel_bateria.png", "03_Z7_freio.png", "04_Z4_unidade_hidraulica.png",
+        "06_ZC_carregador.png", "07_ZC_carregador_componentes.png", "08_ZC_sequencia_ligacao.png", "09_ZC_painel_carregador.png",
+        "05_dimensoes.png"]
+row_px = 20  # altura padrão de linha em px
+cur_row, col_left, tallest = 4, True, 0
+for f in figs:
+    anchor = f"{'A' if col_left else 'K'}{cur_row}"
+    h = add_img(wfg, f, anchor, 480)
+    tallest = max(tallest, h)
+    if not col_left:
+        cur_row += tallest // row_px + 2
+        tallest = 0
+    col_left = not col_left
+
+# ---------------------------------------------------------------- COMPARATIVO ENGENHEIRO
+wce = wb.create_sheet("Comparativo Engenheiro")
+title(wce, "Plano do engenheiro × plano consolidado", "Cada linha é uma tarefa do plano do engenheiro. 'Incorporado' = mantida; 'Ajustado' = mantida com correção; 'Corrigido' = frequência ou dado errado.")
+header(wce, 4, ["Freq. (engenheiro)", "Componente (engenheiro)", "Situação", "Tarefa(s) no plano", "O que mudou e por quê"], [18, 24, 13, 18, 90])
+comp = [
+    ("Diária", "Hidráulica – nível de óleo", "Incorporado", "D05", "Mantido. Executor N1 só verifica; completar é N2."),
+    ("Diária", "Bateria – carga no display", "Incorporado", "D01", "Acrescentado o limite: nunca operar abaixo de 20,4 V."),
+    ("Diária", "Segurança (testes)", "Ajustado", "D06, D07, D08, D09, D16", "Separado em um teste por linha para o operador marcar NC exatamente no item que falhou. O '45° ± 35°' é o interruptor de trava do timão (D09), distinto do teste de frenagem (D06)."),
+    ("Diária", "Estrutura e rodas", "Incorporado", "D04, D13, D14", "Separado em vazamentos, fixadores/quadro e rodas."),
+    ("Semanal (50 h)", "Freios – folga 0,2–0,8 mm", "Ajustado", "S01", "0,8 mm é o limite de bloqueio. Pelo item 9.6, acima de 0,5 mm já é preciso ajustar; após ajuste, 0,2–0,3 mm."),
+    ("Semanal (50 h)", "Engrenagem de giro", "Incorporado", "S02", "Mantido."),
+    ("Semanal (50 h)", "Bateria – nível e densidade", "Ajustado", "S04, S05, S06", "'Exatamente 1,28' trocado por 1,280 ± 0,005 com correção por temperatura (D25 = Dt + 0,0007 × (t − 25)), como manda o item 6.2.4."),
+    ("Semanal (50 h)", "Elétrica – contatores", "Incorporado", "S07", "Acrescentado bloqueio de energia e descarga dos capacitores antes."),
+    ("Mensal (200 h)", "Motores – escovas", "Ajustado", "M08", "Executor N3. O manual descreve motor de tração AC (sem escovas): confirmar com a Assistência quais motores têm escovas."),
+    ("Mensal (200 h)", "Conexões de potência", "Incorporado", "M07", "Conector da bateria (175 A) incluído."),
+    ("Mensal (200 h)", "Chassi e mecânica", "Incorporado", "M05, M06, S08", "Lubrificação com graxa de lítio NLGI 3 e medição do diâmetro das rodas."),
+    ("Mensal (200 h)", "Hidráulica – mangueiras e cilindros", "Incorporado", "M03", "Mantido."),
+    ("Mensal (200 h)", "Ajuste de freio", "Ajustado", "M01 (medir) + T02 (ajustar)", "Medição mensal por N2; ajuste exige desmontagem do freio: só N3 e, na garantia, só a Assistência Autorizada (senão perde a garantia)."),
+    ("Trimestral (600 h)", "Contatores – polimento", "Incorporado", "T01", "Executor N3."),
+    ("Trimestral (600 h)", "Retificador e escovas", "Incorporado", "T03", "Executor N3."),
+    ("Trimestral (600 h)", "Freio – desgaste das placas", "Incorporado", "T02", "Executor N3; inclui ajuste da folga."),
+    ("Anual (1.000 h)", "Fluidos e filtros", "Corrigido", "K01, K02", "1.000 h dá cerca de 5 meses em 1 turno (200 h/mês), não 1 ano. Adotado 1.000 h ou 6 meses. O manual não especifica graxa de lítio para a caixa de redução (9.9 indica óleo 85W-90 GL-5; Tab. 8 fala em graxa): confirmar com a Assistência."),
+    ("Anual (1.000 h)", "Rolamentos dos motores", "Corrigido", "K03", "Mesma correção de frequência: 1.000 h ou 6 meses."),
+    ("1.200 h", "Rodas e rolamentos do garfo", "Incorporado", "K04, M06", "Mantido; limites calculados: roda do garfo ≥ 76 mm, roda de tração ≥ 237,5 mm."),
+    ("1.200 h", "Retentores do cilindro", "Incorporado", "K05", "Mantido."),
+    ("Diária (recarga)", "Carregador – posicionamento", "Incorporado", "R01", "Mantido."),
+    ("Diária (recarga)", "Carregador – segurança elétrica", "Ajustado", "R03", "Na EEV 1500 a bateria se desconecta da máquina pelo próprio conector e vai ao conector 175 A do carregador (EEV 6.1), o que já isola o sistema elétrico; não é preciso soltar o cabo negativo."),
+    ("Diária (recarga)", "Carregador – ambiente", "Ajustado", "R02", "Os 2 m vêm do manual da empilhadeira (6.5.a, distância da bateria a fontes de calor); o manual do carregador não tem seção 6.5. Acrescentado extintor."),
+    ("Diária (recarga)", "Carregador – sequência de conexão", "Incorporado", "R04", "Acrescentada a versão com o conector 175 A, que é o usado na EEV 1500."),
+    ("Diária (recarga)", "Carregador – configuração", "Incorporado", "R05", "Mantido: 24 V · STD · 30 A."),
+    ("Diária (recarga)", "Carregador – monitoramento", "Incorporado", "R06", "Acrescentada a mensagem ALTA TENSÃO e o encerramento ao aparecer CARREGADA."),
+    ("Semanal", "Carregador – cabos", "Incorporado", "R07", "Mantido."),
+    ("Semanal", "Carregador – garras", "Incorporado", "R08", "O manual pede água e bicarbonato (não especifica água morna)."),
+    ("Mensal", "Carregador – ventoinha", "Incorporado", "R09", "Mantido."),
+    ("Mensal", "Carregador – limpeza geral", "Incorporado", "R10", "Acrescentado: nunca abrir a carcaça."),
+    ("Mensal", "Carregador – segurança na manutenção", "Incorporado", "R07–R10", "Virou pré-condição de cada tarefa do carregador (fora da tomada e da bateria)."),
+    ("—", "NOVO no plano consolidado", "Acrescentado", "D11, D12, D15, D17, P01–P04, B01, M04, M10, K07, A01–A04, R11", "Itens que não estavam no plano do engenheiro: garfos, mastro e correntes, painel/códigos, placas, rotina de fim de turno, carga equalizadora, tubo de alta pressão (2.000 h), válvula de segurança, avaliação anual da bateria, tomada do carregador. Também: criticidade A/B/C, nível de executor, EPI, critério de aceitação, bloqueio de energia e zona."),
+]
+for i, row in enumerate(comp, 5):
+    for j, v in enumerate(row, 1):
+        wce.cell(row=i, column=j, value=v)
+endc = 4 + len(comp)
+body(wce, 5, endc, 1, 5)
+sit = f"C5:C{endc}"
+wce.conditional_formatting.add(sit, CellIsRule(operator="equal", formula=['"Incorporado"'], fill=GRN))
+wce.conditional_formatting.add(sit, CellIsRule(operator="equal", formula=['"Ajustado"'], fill=AMB))
+wce.conditional_formatting.add(sit, CellIsRule(operator="equal", formula=['"Corrigido"'], fill=RED))
+wce.conditional_formatting.add(sit, CellIsRule(operator="equal", formula=['"Acrescentado"'], fill=SUB))
+landscape(wce)
+
+ORDEM = ["LEIA-ME", "Mapa de Zonas", "Plano Preventivo", "Checklist Diário", "Figuras do Manual", "Comparativo Engenheiro",
+         "Criticidade", "Controle Horímetro", "Cronograma 52 sem", "Ordem de Serviço", "Treinamento", "Diagnóstico",
+         "Insumos e Ferramentas", "Parâmetros"]
+wb._sheets = [wb[n] for n in ORDEM]
+wb.active = 0
 for s in wb.worksheets:
     s.sheet_view.showGridLines = False
 wb.save(OUT)
