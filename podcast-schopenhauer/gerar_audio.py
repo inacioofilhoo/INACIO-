@@ -6,7 +6,8 @@ import numpy as np, soundfile as sf
 from kokoro_onnx import Kokoro
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-VOZES = {"H": ("pm_alex", 1.0), "E": ("pf_dora", 1.0)}
+VEL = float(os.environ.get("VELOCIDADE", "0.95"))
+VOZES = {"H": ("pm_alex", VEL), "E": ("pf_dora", VEL)}
 PAUSA = 0.45
 
 def vinheta(sr):
@@ -37,7 +38,7 @@ def main():
         mp3 = os.path.join(BASE, "audios", ep + ".mp3")
         os.makedirs(os.path.dirname(mp3), exist_ok=True)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-af", "loudnorm=I=-16:TP=-1.5",
-                        "-ac", "1", "-ar", "44100", "-b:a", "80k", mp3], check=True)
+                        "-ac", "1", "-ar", "44100", "-b:a", "56k", mp3], check=True)
         os.remove(wav)
         print(ep, "ok", flush=True)
 
