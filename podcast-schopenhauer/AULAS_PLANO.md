@@ -24,4 +24,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula02: estratagema 2, homonímia
 - [x] aula03: estratagema 3, do relativo ao absoluto
 - [x] aula04: estratagema 4, esconder a conclusão
-- [ ] aula05 a aula38: estratagemas 5 a 38, em ordem
+- [x] aula05: estratagema 5, premissas falsas aceitas pelo adversário
+- [x] aula06: estratagema 6, petição de princípio disfarçada
+- [ ] aula07 a aula38: estratagemas 7 a 38, em ordem
