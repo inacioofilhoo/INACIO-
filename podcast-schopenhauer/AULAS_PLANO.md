@@ -28,4 +28,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula06: estratagema 6, petição de princípio disfarçada
 - [x] aula07: estratagema 7, muitas perguntas e exposição rápida
 - [x] aula08: estratagema 8, irritar o adversário
-- [ ] aula09 a aula38: estratagemas 9 a 38, em ordem
+- [x] aula09: estratagema 9, perguntas fora de ordem
+- [x] aula10: estratagema 10, perguntar o contrário a quem nega por reflexo
+- [ ] aula11 a aula38: estratagemas 11 a 38, em ordem
