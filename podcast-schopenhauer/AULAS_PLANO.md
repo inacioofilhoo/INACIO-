@@ -30,4 +30,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula08: estratagema 8, irritar o adversário
 - [x] aula09: estratagema 9, perguntas fora de ordem
 - [x] aula10: estratagema 10, perguntar o contrário a quem nega por reflexo
-- [ ] aula11 a aula38: estratagemas 11 a 38, em ordem
+- [x] aula11: estratagema 11, indução com a regra geral não perguntada
+- [x] aula12: estratagema 12, escolher o nome favorável
+- [ ] aula13 a aula38: estratagemas 13 a 38, em ordem
