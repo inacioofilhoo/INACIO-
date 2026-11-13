@@ -32,4 +32,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula10: estratagema 10, perguntar o contrário a quem nega por reflexo
 - [x] aula11: estratagema 11, indução com a regra geral não perguntada
 - [x] aula12: estratagema 12, escolher o nome favorável
-- [ ] aula13 a aula38: estratagemas 13 a 38, em ordem
+- [x] aula13: estratagema 13, falso dilema com o oposto caricato
+- [x] aula14: estratagema 14, proclamar vitória sem ter provado
+- [ ] aula15 a aula38: estratagemas 15 a 38, em ordem
