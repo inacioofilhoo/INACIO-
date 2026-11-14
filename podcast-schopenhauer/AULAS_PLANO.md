@@ -34,4 +34,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula12: estratagema 12, escolher o nome favorável
 - [x] aula13: estratagema 13, falso dilema com o oposto caricato
 - [x] aula14: estratagema 14, proclamar vitória sem ter provado
-- [ ] aula15 a aula38: estratagemas 15 a 38, em ordem
+- [x] aula15: estratagema 15, a proposição-isca para a tese paradoxal
+- [x] aula16: estratagema 16, ad hominem técnico (contradições do adversário)
+- [ ] aula17 a aula38: estratagemas 17 a 38, em ordem
