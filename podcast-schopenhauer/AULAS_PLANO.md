@@ -36,4 +36,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula14: estratagema 14, proclamar vitória sem ter provado
 - [x] aula15: estratagema 15, a proposição-isca para a tese paradoxal
 - [x] aula16: estratagema 16, ad hominem técnico (contradições do adversário)
-- [ ] aula17 a aula38: estratagemas 17 a 38, em ordem
+- [x] aula17: estratagema 17, a distinção sutil
+- [x] aula18: estratagema 18, interromper o argumento do adversário
+- [ ] aula19 a aula38: estratagemas 19 a 38, em ordem
