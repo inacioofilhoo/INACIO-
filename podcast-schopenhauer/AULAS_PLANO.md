@@ -38,4 +38,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula16: estratagema 16, ad hominem técnico (contradições do adversário)
 - [x] aula17: estratagema 17, a distinção sutil
 - [x] aula18: estratagema 18, interromper o argumento do adversário
-- [ ] aula19 a aula38: estratagemas 19 a 38, em ordem
+- [x] aula19: estratagema 19, generalizar quando se pede o específico
+- [x] aula20: estratagema 20, tirar a conclusão por conta própria
+- [ ] aula21 a aula38: estratagemas 21 a 38, em ordem
