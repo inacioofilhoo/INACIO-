@@ -42,4 +42,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula20: estratagema 20, tirar a conclusão por conta própria
 - [x] aula21: estratagema 21, responder a um sofisma com outro sofisma
 - [x] aula22: estratagema 22, acusar falsamente de petição de princípio
-- [ ] aula23 a aula38: estratagemas 23 a 38, em ordem
+- [x] aula23: estratagema 23, provocar o exagero do adversário
+- [x] aula24: estratagema 24, consequências forçadas
+- [ ] aula25 a aula38: estratagemas 25 a 38, em ordem
