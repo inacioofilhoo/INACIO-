@@ -44,4 +44,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula22: estratagema 22, acusar falsamente de petição de princípio
 - [x] aula23: estratagema 23, provocar o exagero do adversário
 - [x] aula24: estratagema 24, consequências forçadas
-- [ ] aula25 a aula38: estratagemas 25 a 38, em ordem
+- [x] aula25: estratagema 25, a instância (contraexemplo)
+- [x] aula26: estratagema 26, retorsão do argumento
+- [ ] aula27 a aula38: estratagemas 27 a 38, em ordem
