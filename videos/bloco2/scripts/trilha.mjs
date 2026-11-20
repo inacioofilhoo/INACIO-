@@ -25,11 +25,14 @@ for (let t = 7.2; t < 52.5; t += B) {
   if (t > 32 && t < 34) continue; // respiro no "AGORA NÃO"
   kick(t, 0.6); hat(t + B / 2, 0.1); hat(t + B / 4, 0.04); hat(t + (3 * B) / 4, 0.04);
 }
-boom(0, 0.7); whoosh(0.9, 1.1); whoosh(2.4, 0.6, 0.5); boom(4, 1); glass(4.02); glass(6); boom(6, 0.6);
+boom(4, 0.55); // sub grave por baixo do som real da tela quebrando
 [7.2, 11, 12, 13.5, 16, 22, 29.9, 32, 34, 39.5, 41, 42, 44, 47, 51].forEach((t) => boom(t, 0.75));
 [17.3, 18, 19.2, 19.8, 24.4, 25.3, 28.2].forEach((t) => whoosh(t - 0.25, 0.4, 0.3));
 [44.1, 44.9, 45.8, 47.1, 51.1].forEach((t) => pop(t));
 boom(53 - 1.6, 0.5);
+
+// silêncio total enquanto a tela "morre" (5,0 s a 7,0 s)
+for (let i = 0; i < N; i++) { const t = i / SR; const g = t < 4.95 || t > 7.05 ? 1 : t < 5.05 ? (5.05 - t) / 0.1 : t > 6.95 ? (t - 6.95) / 0.1 : 0; L[i] *= g; R[i] *= g; }
 
 // normaliza e grava WAV 16-bit estéreo
 let pk = 0; for (let i = 0; i < N; i++) pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i]));

@@ -1,19 +1,16 @@
 import React from "react";
-import { AbsoluteFill, Composition, Sequence, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Composition, random, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { BG, Grain, MONO, ORANGE, Vignette } from "./lib";
-import { Attention, BallRush, Crack, Eight, Gold, Mas, OrbIntro, Shatter, StillHere, Wrecking } from "./scenesA";
+import { Attention, Eight, Gold, Mas, StillHere } from "./scenesA";
 import { AgoraNao, BalloonScene, Checklist, ComoEsse, CriaTudo, Espiona, Fifteen, MasVoce, MesmoQue, PhoneScene } from "./scenesB";
+import { BallShot, IMPACT, ScreenCrack } from "./impact";
 
 const FPS = 30;
 /** O vídeo interno começa em 0:02 do vídeo final; o cronômetro mostra o tempo do vídeo final. */
 const OFFSET_S = 2;
 
 const TIMELINE: { name: string; dur: number; C: React.FC }[] = [
-  { name: "Esfera", dur: 30, C: OrbIntro },
-  { name: "Pêndulo", dur: 60, C: Wrecking },
-  { name: "Avanço", dur: 30, C: BallRush },
-  { name: "Impacto", dur: 60, C: Crack },
-  { name: "Estilhaços", dur: 30, C: Shatter },
+  { name: "Bola + impacto", dur: 210, C: BallShot },
   { name: "8 segundos", dur: 120, C: Eight },
   { name: "Ainda aqui", dur: 30, C: StillHere },
   { name: "Ouro", dur: 45, C: Gold },
@@ -45,26 +42,56 @@ const TimerPill: React.FC = () => {
   );
 };
 
+/** Tela "morta" depois do impacto: apaga piscando e cobre também o cronômetro. */
+const ScreenDead: React.FC = () => {
+  const f = useCurrentFrame() + IMPACT;
+  if (f < 150 || f >= 210) return null;
+  const o = f < 168 ? (random(`sd${f}`) > 0.5 ? 1 : 0.2) : 1;
+  return <AbsoluteFill style={{ background: "#000", opacity: o }} />;
+};
+
 export const Bloco2: React.FC = () => {
+  const frame = useCurrentFrame();
+  // tranco do impacto no conteúdo (o vidro fica parado, como num celular de verdade)
+  const k = frame >= IMPACT && frame < IMPACT + 14 ? 1 - (frame - IMPACT) / 14 : 0;
+  const shake = k > 0 ? `translate(${(random(`kx${frame}`) - 0.5) * 60 * k}px, ${(random(`ky${frame}`) - 0.5) * 60 * k}px)` : undefined;
   let from = 0;
   return (
     <AbsoluteFill style={{ background: BG }}>
-      {TIMELINE.map(({ name, dur, C }) => {
-        const el = (
-          <Sequence key={name} name={name} from={from} durationInFrames={dur}>
-            <C />
-          </Sequence>
-        );
-        from += dur;
-        return el;
-      })}
-      <Vignette />
-      <Grain />
-      <TimerPill />
+      <AbsoluteFill style={{ transform: shake }}>
+        {TIMELINE.map(({ name, dur, C }) => {
+          const el = (
+            <Sequence key={name} name={name} from={from} durationInFrames={dur}>
+              <C />
+            </Sequence>
+          );
+          from += dur;
+          return el;
+        })}
+        <Vignette />
+        <Grain />
+        <TimerPill />
+      </AbsoluteFill>
+      <Sequence name="Tela apagada" from={IMPACT} durationInFrames={90}>
+        <ScreenDead />
+      </Sequence>
+      <Sequence name="Vidro do celular" from={IMPACT} durationInFrames={170}>
+        <ScreenCrack />
+      </Sequence>
+      <Audio src={staticFile("sfx/trilha.wav")} volume={0.55} />
+      <Sequence name="Som: bola" from={IMPACT - 36}>
+        <Audio src={staticFile("sfx/bola-whoosh.mp3")} volume={0.9} />
+      </Sequence>
+      <Sequence name="Som: tela quebrando" from={IMPACT}>
+        <Audio src={staticFile("sfx/impacto-tela.mp3")} />
+      </Sequence>
     </AbsoluteFill>
   );
 };
 
 export const MyComposition = () => (
-  <Composition id="Bloco2" component={Bloco2} durationInFrames={TOTAL} fps={FPS} width={1080} height={1920} />
+  <>
+    <Composition id="Bloco2" component={Bloco2} durationInFrames={TOTAL} fps={FPS} width={1080} height={1920} />
+    <Composition id="Impacto" component={Bloco2} durationInFrames={330} fps={FPS} width={1080} height={1920} />
+  </>
 );
