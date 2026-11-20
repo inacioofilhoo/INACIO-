@@ -420,7 +420,7 @@ export const Espiona: React.FC = () => {
 };
 
 /* ---------- 20. Cria tudo por você ---------- */
-export const CriaTudo: React.FC = () => {
+export const CriaTudo: React.FC<{ globalFrom?: number }> = ({ globalFrom = 0 }) => {
   const f = useCurrentFrame();
   const ctrl = ci(f, 26, 36, 0, 1);
   return (
@@ -439,7 +439,7 @@ export const CriaTudo: React.FC = () => {
         <div style={{ flex: 1, height: 10, borderRadius: 5, background: "#333", overflow: "hidden" }}>
           <div style={{ width: `${96 + ctrl * 4}%`, height: "100%", background: ORANGE }} />
         </div>
-        <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: 34, color: "#fff" }}>00:55</div>
+        <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: 34, color: "#fff" }}>{"00:" + String(Math.floor((globalFrom + f) / 30) + 2).padStart(2, "0")}</div>
       </div>
     </Scene>
   );
