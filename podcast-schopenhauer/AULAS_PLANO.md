@@ -46,4 +46,8 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula24: estratagema 24, consequências forçadas
 - [x] aula25: estratagema 25, a instância (contraexemplo)
 - [x] aula26: estratagema 26, retorsão do argumento
-- [ ] aula27 a aula38: estratagemas 27 a 38, em ordem
+- [x] aula27: estratagema 27, insistir no argumento que irrita
+- [x] aula28: estratagema 28, argumento para a plateia
+- [x] aula29: estratagema 29, a diversão
+- [x] aula30: estratagema 30, apelo à autoridade
+- [ ] aula31 a aula38: estratagemas 31 a 38, em ordem
