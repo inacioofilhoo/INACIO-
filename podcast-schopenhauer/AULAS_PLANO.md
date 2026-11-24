@@ -52,4 +52,6 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula30: estratagema 30, apelo à autoridade
 - [x] aula31: estratagema 31, incompetência irônica
 - [x] aula32: estratagema 32, rótulo odioso
-- [ ] aula33 a aula38: estratagemas 33 a 38, em ordem
+- [x] aula33: estratagema 33, certo na teoria, falso na prática
+- [x] aula34: estratagema 34, insistir quando o adversário foge da pergunta
+- [ ] aula35 a aula38: estratagemas 35 a 38, em ordem
