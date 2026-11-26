@@ -56,4 +56,5 @@ Geração: `python3 gerar_audio.py <kokoro-v1.0.onnx> <voices-v1.0.bin> aulaNN` 
 - [x] aula34: estratagema 34, insistir quando o adversário foge da pergunta
 - [x] aula35: estratagema 35, argumento pelo interesse
 - [x] aula36: estratagema 36, palavreado sem sentido
-- [ ] aula37 a aula38: estratagemas 37 e 38, em ordem
+- [x] aula37: estratagema 37, refutar a prova ruim como se refutasse a tese
+- [x] aula38: estratagema 38, ataque pessoal e conclusão (com quem discutir); fechamento da série
